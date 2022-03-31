@@ -14,7 +14,7 @@ RUN npm install --only=production
 
 FROM public.ecr.aws/lambda/nodejs:14
 RUN yum install -y amazon-linux-extras
-RUN amazon-linux-extras enable GraphicsMagick1.3 libreoffice && yum clean metadata && yum install -y libreoffice GraphicsMagick
+RUN amazon-linux-extras enable GraphicsMagick1.3 libreoffice && yum clean metadata && yum install -y libreoffice GraphicsMagick pdftk
 
 COPY --from=ts-remover /usr/app ./
 
