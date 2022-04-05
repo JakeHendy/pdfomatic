@@ -8,19 +8,25 @@ export const createHigherPrefix = (record: S3EventRecord): string => {
     return key.join('/')
 }
 
+const handleS3Event = async (record: S3EventRecord): Promise<[Boolean, Array<Error>]> => {
+    const client = new S3({ region: record.awsRegion });
+
+    const objects = await client.listObjectsV2({
+        Bucket: record.s3.bucket.name,
+        Prefix: createHigherPrefix(record)
+    })
+    console.log(`There are ${objects.KeyCount} objects in this prefix`)
+    return [true, []]
+}
+
 export const handler = async (event: SQSEvent, _context: Context): Promise<String> => {
     console.log(event);
-    const client = new S3({ region: event.Records[0].awsRegion });
     for (let i = 0; i < event.Records.length; i++) {
         const record = event.Records[i];
 
         const snsEvent = JSON.parse(record.body) as SNSEvent;
         const s3Event = JSON.parse(snsEvent.Records[0].Sns.Message) as S3EventRecord
-        const objects = await client.listObjectsV2({
-            Bucket: s3Event.s3.bucket.name,
-            Prefix: createHigherPrefix(s3Event)
-        })
-        console.log(`There are ${objects.KeyCount} objects in this prefix`)
+        handleS3Event(s3Event)
     }
     return 'Hello World!';
 }
