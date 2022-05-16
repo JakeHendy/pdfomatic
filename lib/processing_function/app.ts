@@ -19,8 +19,9 @@ const handleS3Event = async (record: S3EventRecord): Promise<[Boolean, Array<Err
     return [true, []]
 }
 
-export const handler = async (event: SQSEvent, _context: Context): Promise<String> => {
-    console.log(event);
+export const handler = async (event: SQSEvent, _context: Context): Promise<string> => {
+    console.log("Starting function...");
+    console.log(JSON.stringify(event));
     for (let i = 0; i < event.Records.length; i++) {
         const record = event.Records[i];
 
